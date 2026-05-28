@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Crônicas da Leitura</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --card: #1f2b47;
+            --accent: #d4a843;
+            --accent2: #e6c97e;
+            --text: #e0d6c2;
+            --text2: #b8a88a;
+            --danger: #c0392b;
+            --success: #27ae60;
+            --border: #2e3d5e;
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+            --radius: 12px;
+            --transition: 0.2s ease;
+            --font: 'Segoe UI', system-ui, sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            line-height: 1.6;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(212,168,67,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(212,168,67,0.04) 0%, transparent 50%);
+        }
+        .container { max-width:1200px; margin:0 auto; padding:16px; }
+        .header { text-align:center; padding:28px 16px 20px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+        .header h1 { font-size:2rem; color:var(--accent2); letter-spacing:1px; margin-bottom:4px; }
+        .subtitle { font-size:0.9rem; color:var(--text2); }
+        .btn {
+            display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border:none; border-radius:8px;
+            cursor:pointer; font-size:0.95rem; font-weight:600; transition:var(--transition); font-family:var(--font);
+        }
+        .btn-primary { background:var(--accent); color:#1a1a2e; }
+        .btn-primary:hover { background:var(--accent2); transform:translateY(-2px); box-shadow:0 6px 20px rgba(212,168,67,0.3); }
+        .btn-secondary { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+        .btn-secondary:hover { background:#253256; border-color:var(--accent); }
+        .btn-danger { background:var(--danger); color:#fff; }
+        .btn-danger:hover { background:#e74c3c; }
+        .btn-sm { padding:6px 12px; font-size:0.8rem; border-radius:6px; }
+        .groups-grid {
+            display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; margin-bottom:20px;
+        }
+        .group-card {
+            background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;
+            cursor:pointer; transition:var(--transition); position:relative; overflow:hidden;
+        }
+        .group-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:var(--shadow); }
+        .group-card .group-icon { font-size:2.5rem; margin-bottom:8px; }
+        .group-card .group-name { font-size:1.2rem; font-weight:700; color:var(--accent2); margin-bottom:4px; }
+        .group-card .group-info { font-size:0.8rem; color:var(--text2); }
+        .delete-group {
+            position:absolute; top:10px; right:10px; background:transparent; border:none; color:var(--text2);
+            font-size:1rem; padding:4px 8px; border-radius:4px; opacity:0; transition:var(--transition);
+        }
+        .group-card:hover .delete-group { opacity:1; }
+        .delete-group:hover { color:var(--danger); background:rgba(192,57,43,0.15); }
+        .nav-bar { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+        .back-btn { font-size:1.3rem; cursor:pointer; color:var(--accent); background:transparent; border:none; }
+        .group-title { font-size:1.3rem; font-weight:700; color:var(--accent2); }
+        .tabs { display:flex; gap:4px; margin-bottom:20px; border-bottom:2px solid var(--border); flex-wrap:wrap; }
+        .tab-btn {
+            padding:10px 22px; background:transparent; color:var(--text2); cursor:pointer; font-weight:600;
+            border:3px solid transparent; border-radius:8px 8px 0 0; transition:var(--transition); font-family:var(--font);
+        }
+        .tab-btn.active { color:var(--accent2); border-bottom-color:var(--accent); background:rgba(212,168,67,0.05); }
+        .tab-content { display:none; animation:fadeIn 0.3s ease; }
+        .tab-content.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+        .works-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px; margin-bottom:20px; }
+        .work-card {
+            background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px;
+            position:relative; transition:var(--transition); box-shadow:0 2px 8px rgba(0,0,0,0.2);
+        }
+        .work-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:var(--shadow); }
+        .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+        .work-name { font-size:1.05rem; font-weight:700; color:var(--accent2); }
+        .author { color:var(--text); font-weight:600; font-size:0.9rem; }
+        .author-handle { color:var(--accent); font-size:0.85rem; margin-bottom:6px; }
+        .meta-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+        .tag { font-size:0.7rem; padding:3px 8px; border-radius:20px; background:rgba(212,168,67,0.12); color:var(--accent2); font-weight:600; }
+        .tag.rating { background:rgba(39,174,96,0.15); color:#6ddb9e; }
+        .synopsis { font-size:0.82rem; color:var(--text2); margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+        .link { display:inline-block; font-size:0.8rem; color:var(--accent); text-decoration:none; word-break:break-all; margin-bottom:8px; }
+        .link:hover { color:var(--accent2); text-decoration:underline; }
+        .card-actions { display:flex; gap:6px; justify-content:flex-end; }
+        .form-section {
+            background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+            padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.3);
+        }
+        .form-section h3 { color:var(--accent2); margin-bottom:16px; font-size:1.1rem; }
+        .form-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:12px; }
+        .form-group { display:flex; flex-direction:column; gap:4px; }
+        .form-group.full-width { grid-column:1 / -1; }
+        .form-group label { font-size:0.8rem; font-weight:600; color:var(--text2); text-transform:uppercase; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding:9px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg);
+            color:var(--text); font-family:var(--font); font-size:0.9rem; transition:var(--transition);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(212,168,67,0.1);
+        }
+        .form-group textarea { min-height:70px; resize:vertical; }
+        .form-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+        .cycle-config {
+            background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+            padding:20px; margin-bottom:20px;
+        }
+        .config-row { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:12px; }
+        .config-row .form-group { min-width:140px; }
+        .config-row input { width:90px; }
+        .draw-area {
+            background:var(--card); border:2px dashed var(--border); border-radius:var(--radius);
+            padding:30px; text-align:center; margin-bottom:20px;
+        }
+        .draw-area.ready { border-color:var(--accent); background:rgba(212,168,67,0.03); animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,0.15);} 50%{box-shadow:0 0 0 16px rgba(212,168,67,0);} }
+        .draw-status { font-size:1rem; color:var(--text2); margin-bottom:12px; }
+        .draw-countdown { font-size:0.85rem; color:var(--accent); margin-bottom:8px; }
+        .draw-history { margin-top:20px; }
+        .draw-history h4 { color:var(--accent2); margin-bottom:10px; }
+        .draw-history-item {
+            background:var(--surface); border:1px solid var(--border); border-radius:8px;
+            padding:12px; margin-bottom:8px; font-size:0.85rem;
+        }
+        .draw-history-item .draw-date { color:var(--accent); font-weight:700; margin-bottom:4px; }
+        .modal-overlay {
+            position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.75);
+            display:flex; align-items:center; justify-content:center; z-index:1000; padding:16px;
+        }
+        .modal {
+            background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+            padding:24px; max-width:700px; width:100%; max-height:85vh; overflow-y:auto;
+            box-shadow:0 20px 60px rgba(0,0,0,0.6); position:relative;
+        }
+        .modal .close-modal {
+            position:sticky; top:0; float:right; background:transparent; border:none;
+            color:var(--text2); font-size:1.5rem; cursor:pointer; padding:4px 8px; border-radius:4px;
+        }
+        .result-text {
+            background:#0d0d1a; border:1px solid var(--border); border-radius:8px; padding:16px;
+            white-space:pre-wrap; font-family:'Courier New', monospace; font-size:0.85rem;
+            line-height:1.7; color:#e0d6c2; max-height:50vh; overflow-y:auto;
+        }
+        .copy-success { color:var(--success); text-align:center; margin-top:8px; font-size:0.85rem; display:none; }
+        .toast {
+            position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+            background:var(--success); color:#fff; padding:10px 24px; border-radius:30px;
+            font-weight:600; z-index:2000; box-shadow:0 8px 30px rgba(0,0,0,0.4);
+            animation:slideUp 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+        }
+        @keyframes slideUp { from{transform:translateX(-50%) translateY(40px);opacity:0;} to{transform:translateX(-50%) translateY(0);opacity:1;} }
+        @keyframes fadeOut { to{opacity:0;transform:translateX(-50%) translateY(-20px);} }
+        @media (max-width:600px) {
+            .works-grid { grid-template-columns:1fr; }
+            .form-grid { grid-template-columns:1fr; }
+            .config-row { flex-direction:column; gap:8px; }
+            .header h1 { font-size:1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="header">
+            <h1>📚 Crônicas da Leitura</h1>
+            <p class="subtitle">Gerencie obras, grupos e sorteios literários</p>
+        </div>
+
+        <!-- Tela Grupos -->
+        <div id="groups-screen">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+                <h2 style="color:var(--accent2);font-size:1.3rem;">🏠 Meus Grupos</h2>
+                <button class="btn btn-primary" onclick="showCreateGroupForm()">+ Novo Grupo</button>
+            </div>
+            <div id="create-group-form" style="display:none;margin-bottom:16px;background:var(--surface);padding:16px;border-radius:var(--radius);border:1px solid var(--border);">
+                <input type="text" id="new-group-name" placeholder="Nome do grupo..." style="padding:10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;width:100%;max-width:400px;">
+                <button class="btn btn-primary btn-sm" onclick="createGroup()" style="margin-top:8px;">Criar</button>
+                <button class="btn btn-secondary btn-sm" onclick="hideCreateGroupForm()" style="margin-top:8px;">Cancelar</button>
+            </div>
+            <div class="groups-grid" id="groups-list"></div>
+            <div id="no-groups-msg" style="text-align:center;color:var(--text2);padding:40px;">Nenhum grupo ainda. Crie um para começar! ✨</div>
+            <div style="margin-top:20px;text-align:center;color:var(--text2);font-size:0.8rem;">🍃 Dani Boy</div>
+        </div>
+
+        <!-- Tela Grupo -->
+        <div id="group-screen" style="display:none;">
+            <div class="nav-bar">
+                <button class="back-btn" onclick="goToGroups()">←</button>
+                <span class="group-title" id="current-group-name"></span>
+                <span style="font-size:0.8rem;color:var(--text2);" id="works-count"></span>
+            </div>
+            <div class="tabs">
+<button id="tab-btn-works" class="tab-btn active" onclick="switchTab('works')">📖 Obras</button>
+<button id="tab-btn-draw" class="tab-btn" onclick="switchTab('draw')">🎲 Sorteio</button>
+            </div>
+            <div class="tab-content active" id="tab-works">
+                <div class="form-section" id="work-form-section">
+                    <h3 id="form-title">📝 Cadastrar Nova Obra</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nome completo do autor *</label><input type="text" id="w-author-name" placeholder="Ex: João Silva"></div>
+                        <div class="form-group"><label>Idade do autor</label><input type="text" id="w-author-age" placeholder="Ex: 25"></div>
+                        <div class="form-group"><label>@ do autor *</label><input type="text" id="w-author-handle" placeholder="Ex: @joaosilva"></div>
+                        <div class="form-group"><label>Nome da obra *</label><input type="text" id="w-work-name" placeholder="Ex: A Jornada"></div>
+                        <div class="form-group"><label>Link da obra *</label><input type="url" id="w-link" placeholder="https://..."></div>
+                        <div class="form-group"><label>Gênero</label><input type="text" id="w-genre" list="genres"></div>
+                        <div class="form-group"><label>Subgênero</label><input type="text" id="w-subgenre" list="subgenres"></div>
+                        <div class="form-group"><label>Classificação</label><select id="w-rating"><option value="">Selecione...</option><option>Livre</option><option>+10</option><option>+12</option><option>+14</option><option>+16</option><option>+18</option></select></div>
+                        <div class="form-group full-width"><label>Sinopse da obra</label><textarea id="w-synopsis" placeholder="Breve sinopse..."></textarea></div>
+                    </div>
+                    <input type="hidden" id="w-edit-id" value="">
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveWork()" id="btn-save-work">💾 Salvar Obra</button>
+                        <button class="btn btn-secondary btn-sm" onclick="clearWorkForm()" id="btn-cancel-edit" style="display:none;">Cancelar Edição</button>
+                    </div>
+                </div>
+                <div class="works-grid" id="works-grid"></div>
+                <div id="no-works-msg" style="text-align:center;color:var(--text2);padding:30px;">Nenhuma obra cadastrada.</div>
+            </div>
+            <div class="tab-content" id="tab-draw">
+                <div class="cycle-config">
+                    <h3>⚙️ Configuração do Ciclo</h3>
+                    <div class="config-row">
+                        <div class="form-group"><label>Semanas de ciclo</label><input type="number" id="cycle-weeks" min="1" max="52" value="1"></div>
+                        <div class="form-group"><label>Intervalo (dias)</label><input type="number" id="cycle-interval" min="1" max="30" value="2"></div>
+                        <div class="form-group"><label>Qtd. por sorteio</label><input type="number" id="cycle-quantity" min="1" max="50" value="2"></div>
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--text2);">📅 Ex: 1 semana, intervalo 2 dias, 2 obras → seg e qua.</p>
+                    <button class="btn btn-primary" id="btn-start-cycle" onclick="startCycle()">🚀 Iniciar Ciclo</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-stop-cycle" style="display:none;" onclick="stopCycle()">⏹️ Encerrar Ciclo</button>
+                </div>
+                <div class="draw-area" id="draw-area">
+                    <div class="draw-status" id="draw-status-text">Configure e inicie um ciclo acima.</div>
+                    <div class="draw-countdown" id="draw-countdown"></div>
+                    <button class="btn btn-primary" id="btn-draw" style="display:none;font-size:1.1rem;padding:14px 32px;" onclick="performDraw()">🎰 Sortear Agora!</button>
+                </div>
+                <div class="draw-history" id="draw-history-section" style="display:none;">
+                    <h4>📋 Histórico de Sorteios</h4>
+                    <div id="draw-history-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Resultado -->
+    <div class="modal-overlay" id="result-modal" style="display:none;">
+        <div class="modal">
+            <button class="close-modal" onclick="closeResultModal()">✕</button>
+            <h3 style="color:var(--accent2);margin-bottom:16px;">🎉 Resultado do Sorteio</h3>
+            <div class="result-text" id="result-text-content"></div>
+            <div style="text-align:center;margin-top:14px;">
+                <button class="btn btn-primary" onclick="copyResult()">📋 Copiar Texto</button>
+            </div>
+            <div class="copy-success" id="copy-success-msg">✅ Copiado! Cole no WhatsApp.</div>
+        </div>
+    </div>
+    <div id="toast" class="toast" style="display:none;"></div>
+
+    <datalist id="genres"><option>Fantasia</option><option>Romance</option><option>Ficção Científica</option><option>Terror</option><option>Drama</option><option>Aventura</option><option>Mistério</option><option>Suspense</option><option>Comédia</option><option>Slice of Life</option><option>Poesia</option><option>Fanfic</option></datalist>
+    <datalist id="subgenres"><option>Dark Fantasy</option><option>High Fantasy</option><option>Romance Policial</option><option>Cyberpunk</option><option>Steampunk</option><option>Distopia</option><option>YA</option><option>New Adult</option><option>Sobrenatural</option></datalist>
+
+    <script>
+const API_URL = "http://localhost:3000";
+
+async function apiRequest(endpoint, method = "GET", body = null) {
+    const options = {
+        method,
+        headers: { "Content-Type": "application/json" }
+    };
+    if (body) options.body = JSON.stringify(body);
+    const res = await fetch(`${API_URL}${endpoint}`, options);
+    if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.error || "Erro na API");
+    }
+    return await res.json();
+}
+
+let currentGroupId = null;
+let currentGroupCache = null;
+
+async function loadGroups() {
+    const groups = await apiRequest("/groups");
+    renderGroups(groups);
+    return groups;
+}
+
+async function goToGroups() {
+    currentGroupId = null;
+    currentGroupCache = null;
+    document.getElementById('groups-screen').style.display = 'block';
+    document.getElementById('group-screen').style.display = 'none';
+    await loadGroups();
+}
+
+async function openGroup(groupId) {
+    currentGroupId = groupId;
+    document.getElementById('groups-screen').style.display = 'none';
+    document.getElementById('group-screen').style.display = 'block';
+    await refreshGroup();
+    switchTab('works');
+}
+
+async function refreshGroup() {
+    if (!currentGroupId) return;
+    const group = await apiRequest(`/groups/${currentGroupId}`);
+    currentGroupCache = group;
+    if (!group) {
+        goToGroups();
+        return;
+    }
+    document.getElementById('current-group-name').textContent = '📁 ' + group.name;
+    updateWorksCount();
+    renderWorks();
+    if (document.getElementById('tab-draw').classList.contains('active')) {
+        renderDrawTab();
+    }
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-btn-' + tab).classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'works') renderWorks();
+    if (tab === 'draw') renderDrawTab();
+}
+
+function showCreateGroupForm() {
+    document.getElementById('create-group-form').style.display = 'block';
+    document.getElementById('new-group-name').focus();
+}
+function hideCreateGroupForm() {
+    document.getElementById('create-group-form').style.display = 'none';
+    document.getElementById('new-group-name').value = '';
+}
+
+async function createGroup() {
+    const name = document.getElementById('new-group-name').value.trim();
+    if (!name) { showToast('Digite um nome.'); return; }
+    await apiRequest("/groups", "POST", { name, works: [], cycle: null });
+    document.getElementById('new-group-name').value = '';
+    hideCreateGroupForm();
+    await loadGroups();
+    showToast('Grupo criado! ✨');
+}
+
+async function deleteGroup(groupId, event) {
+    event.stopPropagation();
+    if (!confirm('Excluir grupo e todas as obras?')) return;
+    await apiRequest(`/groups/${groupId}`, "DELETE");
+    if (currentGroupId === groupId) {
+        currentGroupId = null;
+        document.getElementById('groups-screen').style.display = 'block';
+        document.getElementById('group-screen').style.display = 'none';
+    }
+    await loadGroups();
+    showToast('Grupo excluído.');
+}
+
+function renderGroups(groups) {
+    const container = document.getElementById('groups-list');
+    const noMsg = document.getElementById('no-groups-msg');
+    container.innerHTML = '';
+    if (!groups || groups.length === 0) {
+        noMsg.style.display = 'block';
+        return;
+    }
+    noMsg.style.display = 'none';
+    groups.forEach(group => {
+        const worksCount = group.works ? group.works.length : 0;
+        const card = document.createElement('div');
+        card.className = 'group-card';
+        card.onclick = () => openGroup(group._id.toString());
+        card.innerHTML = `
+            <button class="delete-group">🗑️</button>
+            <div class="group-icon">📁</div>
+            <div class="group-name">${escapeHtml(group.name)}</div>
+            <div class="group-info">📖 ${worksCount} obra(s)</div>
+        `;
+        card.querySelector('.delete-group').addEventListener('click', (e) => deleteGroup(group._id, e));
+        container.appendChild(card);
+    });
+}
+
+function updateWorksCount() {
+    const count = currentGroupCache?.works?.length || 0;
+    document.getElementById('works-count').textContent = `(${count} obra(s))`;
+}
+
+async function saveWork() {
+    if (!currentGroupId) return;
+    const authorName = document.getElementById('w-author-name').value.trim();
+    const authorHandle = document.getElementById('w-author-handle').value.trim();
+    const workName = document.getElementById('w-work-name').value.trim();
+    const link = document.getElementById('w-link').value.trim();
+    const editId = document.getElementById('w-edit-id').value;
+    if (!authorName || !authorHandle || !workName || !link) {
+        showToast('Preencha os campos obrigatórios.');
+        return;
+    }
+    const workData = {
+        id: editId || generateId(),
+        authorName,
+        authorAge: document.getElementById('w-author-age').value.trim(),
+        authorHandle: authorHandle.startsWith('@') ? authorHandle : '@' + authorHandle,
+        workName,
+        link,
+        genre: document.getElementById('w-genre').value.trim(),
+        subgenre: document.getElementById('w-subgenre').value.trim(),
+        rating: document.getElementById('w-rating').value,
+        synopsis: document.getElementById('w-synopsis').value.trim(),
+    };
+
+    const group = currentGroupCache;
+    if (!group) return;
+    let works = group.works || [];
+    if (editId) {
+        works = works.map(w => w.id === editId ? workData : w);
+    } else {
+        works.push(workData);
+    }
+    // Atualiza o grupo inteiro via PUT
+    const updatedGroup = { ...group, works };
+    await apiRequest(`/groups/${currentGroupId}`, "PUT", updatedGroup);
+    clearWorkForm();
+    await refreshGroup();
+    showToast(editId ? 'Obra atualizada!' : 'Obra cadastrada!');
+}
+
+function editWork(workId) {
+    const works = currentGroupCache?.works || [];
+    const work = works.find(w => w.id === workId);
+    if (!work) return;
+    document.getElementById('w-author-name').value = work.authorName;
+    document.getElementById('w-author-age').value = work.authorAge || '';
+    document.getElementById('w-author-handle').value = work.authorHandle;
+    document.getElementById('w-work-name').value = work.workName;
+    document.getElementById('w-link').value = work.link;
+    document.getElementById('w-genre').value = work.genre || '';
+    document.getElementById('w-subgenre').value = work.subgenre || '';
+    document.getElementById('w-rating').value = work.rating || '';
+    document.getElementById('w-synopsis').value = work.synopsis || '';
+    document.getElementById('w-edit-id').value = work.id;
+    document.getElementById('form-title').textContent = '✏️ Editar Obra';
+    document.getElementById('btn-save-work').textContent = '💾 Atualizar Obra';
+    document.getElementById('btn-cancel-edit').style.display = 'inline-flex';
+    document.getElementById('work-form-section').scrollIntoView({ behavior:'smooth' });
+}
+
+async function deleteWork(workId) {
+    if (!confirm('Remover esta obra?')) return;
+    let group = currentGroupCache;
+    let works = (group.works || []).filter(w => w.id !== workId);
+    let cycle = group.cycle;
+    if (cycle?.active) {
+        const drawn = cycle.drawnWorkIds || [];
+        if (drawn.includes(workId)) {
+            cycle.drawnWorkIds = drawn.filter(id => id !== workId);
+            cycle.draws = (cycle.draws || []).map(d => ({
+                ...d,
+                workIds: d.workIds.filter(id => id !== workId)
+            })).filter(d => d.workIds.length > 0);
+        }
+    }
+    const updatedGroup = { ...group, works, cycle };
+    await apiRequest(`/groups/${currentGroupId}`, "PUT", updatedGroup);
+    await refreshGroup();
+    showToast('Obra removida.');
+}
+
+function clearWorkForm() {
+    document.getElementById('w-author-name').value = '';
+    document.getElementById('w-author-age').value = '';
+    document.getElementById('w-author-handle').value = '';
+    document.getElementById('w-work-name').value = '';
+    document.getElementById('w-link').value = '';
+    document.getElementById('w-genre').value = '';
+    document.getElementById('w-subgenre').value = '';
+    document.getElementById('w-rating').value = '';
+    document.getElementById('w-synopsis').value = '';
+    document.getElementById('w-edit-id').value = '';
+    document.getElementById('form-title').textContent = '📝 Cadastrar Nova Obra';
+    document.getElementById('btn-save-work').textContent = '💾 Salvar Obra';
+    document.getElementById('btn-cancel-edit').style.display = 'none';
+}
+
+function renderWorks() {
+    const works = currentGroupCache?.works || [];
+    const grid = document.getElementById('works-grid');
+    const noMsg = document.getElementById('no-works-msg');
+    grid.innerHTML = '';
+    if (works.length === 0) {
+        noMsg.style.display = 'block';
+        return;
+    }
+    noMsg.style.display = 'none';
+    works.forEach(work => {
+        const card = document.createElement('div');
+        card.className = 'work-card';
+        card.innerHTML = `
+            <div class="card-header"><h4 class="work-name">📖 ${escapeHtml(work.workName)}</h4></div>
+            <div class="author">👤 ${escapeHtml(work.authorName)}</div>
+            <div class="author-handle">${escapeHtml(work.authorHandle)}</div>
+            <div class="meta-tags">
+                ${work.genre ? `<span class="tag">🎭 ${escapeHtml(work.genre)}</span>` : ''}
+                ${work.subgenre ? `<span class="tag">🔍 ${escapeHtml(work.subgenre)}</span>` : ''}
+                ${work.rating ? `<span class="tag rating">🔞 ${escapeHtml(work.rating)}</span>` : ''}
+                ${work.authorAge ? `<span class="tag">🎂 ${escapeHtml(work.authorAge)} anos</span>` : ''}
+            </div>
+            ${work.synopsis ? `<p class="synopsis">${escapeHtml(work.synopsis)}</p>` : ''}
+            <a href="${escapeHtml(work.link)}" target="_blank" class="link">🔗 ${escapeHtml(work.link)}</a>
+            <div class="card-actions">
+                <button class="btn btn-secondary btn-sm" onclick="editWork('${work.id}')">✏️ Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteWork('${work.id}')">🗑️ Remover</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function getRemainingWorks() {
+    const group = currentGroupCache;
+    if (!group?.cycle?.active) return [];
+    const drawn = group.cycle.drawnWorkIds || [];
+    return (group.works || []).filter(w => !drawn.includes(w.id));
+}
+
+async function updateCycleOnServer(cycle) {
+    const group = currentGroupCache;
+    const updatedGroup = { ...group, cycle };
+    await apiRequest(`/groups/${currentGroupId}`, "PUT", updatedGroup);
+    currentGroupCache.cycle = cycle; // atualiza cache local
+}
+
+function renderDrawTab() {
+    const group = currentGroupCache;
+    if (!group) return;
+    const cycle = group.cycle;
+    const cycleActive = cycle?.active;
+    document.getElementById('btn-start-cycle').style.display = cycleActive ? 'none' : 'inline-flex';
+    document.getElementById('btn-stop-cycle').style.display = cycleActive ? 'inline-flex' : 'none';
+
+    if (!cycleActive) {
+        document.getElementById('cycle-weeks').value = cycle?.totalWeeks || 1;
+        document.getElementById('cycle-interval').value = cycle?.intervalDays || 2;
+        document.getElementById('cycle-quantity').value = cycle?.quantityPerDraw || 2;
+        document.getElementById('draw-status-text').textContent = 'Configure e inicie um ciclo.';
+        document.getElementById('draw-countdown').textContent = '';
+        document.getElementById('btn-draw').style.display = 'none';
+        document.getElementById('draw-area').classList.remove('ready');
+        document.getElementById('draw-history-section').style.display = 'none';
+        document.getElementById('draw-history-list').innerHTML = '';
+        const ncb = document.getElementById('btn-new-cycle');
+        if (ncb) ncb.remove();
+        return;
+    }
+
+    document.getElementById('cycle-weeks').value = cycle.totalWeeks;
+    document.getElementById('cycle-interval').value = cycle.intervalDays;
+    document.getElementById('cycle-quantity').value = cycle.quantityPerDraw;
+
+    const remaining = getRemainingWorks();
+    if (remaining.length === 0) {
+        document.getElementById('draw-status-text').textContent = '✅ Ciclo concluído! Todas as obras sorteadas.';
+        document.getElementById('draw-countdown').textContent = '';
+        document.getElementById('btn-draw').style.display = 'none';
+        document.getElementById('draw-area').classList.remove('ready');
+        if (!document.getElementById('btn-new-cycle')) {
+            const btn = document.createElement('button');
+            btn.id = 'btn-new-cycle';
+            btn.className = 'btn btn-primary';
+            btn.textContent = '🔄 Iniciar Novo Ciclo';
+            btn.onclick = startNewCycle;
+            document.getElementById('draw-area').appendChild(btn);
+        }
+    } else {
+        const ncb = document.getElementById('btn-new-cycle');
+        if (ncb) ncb.remove();
+        const now = new Date();
+        const lastDraw = cycle.lastDrawDate ? new Date(cycle.lastDrawDate) : new Date(cycle.cycleStartDate);
+        const nextDraw = new Date(lastDraw.getTime() + cycle.intervalDays * 24 * 60 * 60 * 1000);
+        const canDraw = now >= nextDraw;
+        if (canDraw) {
+            document.getElementById('draw-status-text').textContent = `🎲 Pronto para sortear! ${remaining.length} obra(s) restante(s).`;
+            document.getElementById('draw-countdown').textContent = '';
+            document.getElementById('btn-draw').style.display = 'inline-flex';
+            document.getElementById('draw-area').classList.add('ready');
+        } else {
+            const diff = nextDraw - now;
+            const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+            const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            document.getElementById('draw-status-text').textContent = `⏳ Aguardando intervalo. ${remaining.length} restante(s).`;
+            document.getElementById('draw-countdown').textContent = `Próximo sorteio em: ${days > 0 ? days + 'd ' : ''}${hours}h`;
+            document.getElementById('btn-draw').style.display = 'none';
+            document.getElementById('draw-area').classList.remove('ready');
+        }
+    }
+
+    if (cycle.draws?.length) {
+        document.getElementById('draw-history-section').style.display = 'block';
+        const list = document.getElementById('draw-history-list');
+        const works = currentGroupCache?.works || [];
+        list.innerHTML = cycle.draws.slice().reverse().map((d, i) => {
+            const worksInfo = d.workIds.map(wid => {
+                const w = works.find(wk => wk.id === wid);
+                return w ? w.workName : '(removida)';
+            }).join(', ');
+            return `<div class="draw-history-item"><div class="draw-date">🎰 Sorteio #${cycle.draws.length - i}</div><div>📖 ${escapeHtml(worksInfo)}</div></div>`;
+        }).join('');
+    } else {
+        document.getElementById('draw-history-section').style.display = 'none';
+    }
+}
+
+async function startCycle() {
+    const group = currentGroupCache;
+    if (!group) return;
+    if (!group.works?.length) { showToast('Cadastre obras primeiro.'); return; }
+    const weeks = parseInt(document.getElementById('cycle-weeks').value) || 1;
+    const interval = parseInt(document.getElementById('cycle-interval').value) || 2;
+    const qty = parseInt(document.getElementById('cycle-quantity').value) || 2;
+    const cycle = {
+        active: true,
+        totalWeeks: weeks,
+        intervalDays: interval,
+        quantityPerDraw: qty,
+        cycleStartDate: new Date().toISOString(),
+        lastDrawDate: null,
+        drawnWorkIds: [],
+        draws: []
+    };
+    await updateCycleOnServer(cycle);
+    await refreshGroup();
+    showToast('Ciclo iniciado! 🚀');
+}
+
+async function stopCycle() {
+    if (!confirm('Encerrar ciclo? Histórico será perdido.')) return;
+    await updateCycleOnServer(null);
+    const ncb = document.getElementById('btn-new-cycle');
+    if (ncb) ncb.remove();
+    await refreshGroup();
+    showToast('Ciclo encerrado.');
+}
+
+async function startNewCycle() {
+    await updateCycleOnServer(null);
+    const ncb = document.getElementById('btn-new-cycle');
+    if (ncb) ncb.remove();
+    await refreshGroup();
+}
+
+async function performDraw() {
+    const group = currentGroupCache;
+    if (!group?.cycle?.active) return;
+    const remaining = getRemainingWorks();
+    if (!remaining.length) {
+        showToast('Nada a sortear.');
+        return;
+    }
+    const currentQty = parseInt(document.getElementById('cycle-quantity').value) || group.cycle.quantityPerDraw;
+    const drawQty = Math.min(currentQty, remaining.length);
+    const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+    const drawn = shuffled.slice(0, drawQty);
+    const drawnIds = drawn.map(w => w.id);
+    const newDrawnIds = [...group.cycle.drawnWorkIds, ...drawnIds];
+    const newDraw = { date: new Date().toISOString(), workIds: drawnIds };
+    const newDraws = [...(group.cycle.draws || []), newDraw];
+    const newInterval = parseInt(document.getElementById('cycle-interval').value) || group.cycle.intervalDays;
+    const newWeeks = parseInt(document.getElementById('cycle-weeks').value) || group.cycle.totalWeeks;
+    const updatedCycle = {
+        ...group.cycle,
+        drawnWorkIds: newDrawnIds,
+        lastDrawDate: new Date().toISOString(),
+        draws: newDraws,
+        quantityPerDraw: currentQty,
+        intervalDays: newInterval,
+        totalWeeks: newWeeks
+    };
+    // Atualiza o ciclo no servidor
+    await updateCycleOnServer(updatedCycle);
+    // Exibe o resultado
+    const resultText = generateResultText(drawn, currentGroupCache);
+    document.getElementById('result-text-content').textContent = resultText;
+    document.getElementById('result-modal').style.display = 'flex';
+    document.getElementById('copy-success-msg').style.display = 'none';
+    await refreshGroup();
+}
+
+function generateResultText(drawnWorks, group) {
+    const now = new Date();
+    const days = ['DOMINGO','SEGUNDA-FEIRA','TERÇA-FEIRA','QUARTA-FEIRA','QUINTA-FEIRA','SEXTA-FEIRA','SÁBADO'];
+    const dayName = days[now.getDay()];
+    let text = `🕯️📚 CRÔNICAS DO ${group.name.toUpperCase()} — ${dayName} 📚🕯️\n\nSaudações, leitores e criadores de mundos. ✨\n\nAs obras selecionadas para leitura de hoje foram:\n\n`;
+    drawnWorks.forEach((w, i) => {
+        const num = String(i+1).padStart(2,'0');
+        text += `━━━━━━━━━━━━━━━\n📖 OBRA ${num}\n━━━━━━━━━━━━━━━\n\n👤 Autor(a): ${w.authorHandle}\n\n📚 Nome da Obra: ${w.workName}\n\n🔗 Link: ${w.link}\n\n`;
+    });
+    text += `━━━━━━━━━━━━━━━\n⚠️ LEMBRETES IMPORTANTES\n━━━━━━━━━━━━━━━\n\n📖 Ler 1 capítulos de cada obra\n📸 Enviar confirmação no:\n🏆 Missões Concluídas\n\n💬 Comentários obrigatórios:\n• 1 no início\n• 1 no final do capítulo\n\n✨ Comentários e capítulos extras geram pontos adicionais.\n\n🌙 Boa leitura, autores.\nE lembrem-se:\nToda grande história cresce através de leitores que acreditam nela. 📚🔥`;
+    return text;
+}
+
+function closeResultModal() { document.getElementById('result-modal').style.display = 'none'; }
+document.getElementById('result-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeResultModal(); });
+
+async function copyResult() {
+    const text = document.getElementById('result-text-content').textContent;
+    try {
+        await navigator.clipboard.writeText(text);
+        document.getElementById('copy-success-msg').style.display = 'block';
+        setTimeout(() => document.getElementById('copy-success-msg').style.display = 'none', 3000);
+    } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        document.getElementById('copy-success-msg').style.display = 'block';
+        setTimeout(() => document.getElementById('copy-success-msg').style.display = 'none', 3000);
+    }
+}
+
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function generateId() { return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display = 'block';
+    t.style.animation = 'none'; void t.offsetWidth;
+    t.style.animation = 'slideUp 0.3s ease, fadeOut 0.5s ease 2.5s forwards';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+async function init() {
+    document.getElementById('groups-screen').style.display = 'block';
+    document.getElementById('group-screen').style.display = 'none';
+    await loadGroups();
+}
+init();
+</script>
+</body>
+</html>
